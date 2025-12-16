@@ -1,0 +1,1224 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Planning Pro - Notion-like Planner</title>
+    <style>
+        :root {
+            --color-white: rgba(255, 255, 255, 1);
+            --color-black: rgba(0, 0, 0, 1);
+            --color-cream-50: rgba(252, 252, 249, 1);
+            --color-cream-100: rgba(255, 255, 253, 1);
+            --color-gray-200: rgba(245, 245, 245, 1);
+            --color-gray-300: rgba(167, 169, 169, 1);
+            --color-gray-400: rgba(119, 124, 124, 1);
+            --color-slate-500: rgba(98, 108, 113, 1);
+            --color-brown-600: rgba(94, 82, 64, 1);
+            --color-charcoal-700: rgba(31, 33, 33, 1);
+            --color-charcoal-800: rgba(38, 40, 40, 1);
+            --color-slate-900: rgba(19, 52, 59, 1);
+            --color-teal-300: rgba(50, 184, 198, 1);
+            --color-teal-400: rgba(45, 166, 178, 1);
+            --color-teal-500: rgba(33, 128, 141, 1);
+            --color-teal-600: rgba(29, 116, 128, 1);
+            --color-teal-700: rgba(26, 104, 115, 1);
+            --color-teal-800: rgba(41, 150, 161, 1);
+            --color-red-400: rgba(255, 84, 89, 1);
+            --color-red-500: rgba(192, 21, 47, 1);
+            --color-orange-400: rgba(230, 129, 97, 1);
+            --color-orange-500: rgba(168, 75, 47, 1);
+            --color-green-500: rgba(34, 197, 94, 1);
+            --color-yellow-500: rgba(234, 179, 8, 1);
+
+            --color-bg-1: rgba(29, 78, 216, 0.15);
+            --color-bg-2: rgba(180, 83, 9, 0.15);
+            --color-bg-3: rgba(21, 128, 61, 0.15);
+            --color-bg-4: rgba(185, 28, 28, 0.15);
+            --color-background: var(--color-cream-50);
+            --color-surface: var(--color-cream-100);
+            --color-text: var(--color-slate-900);
+            --color-text-secondary: var(--color-slate-500);
+            --color-primary: var(--color-teal-500);
+            --color-primary-hover: var(--color-teal-600);
+            --color-primary-active: var(--color-teal-700);
+            --color-border: rgba(94, 82, 64, 0.2);
+            --color-btn-primary-text: var(--color-cream-50);
+
+            --font-family-base: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            --font-size-xs: 11px;
+            --font-size-sm: 12px;
+            --font-size-base: 14px;
+            --font-size-md: 14px;
+            --font-size-lg: 16px;
+            --font-size-xl: 18px;
+            --font-size-2xl: 20px;
+            --font-size-3xl: 24px;
+            --font-weight-normal: 400;
+            --font-weight-medium: 500;
+            --font-weight-semibold: 550;
+            --font-weight-bold: 600;
+            --line-height-normal: 1.5;
+            --space-4: 4px;
+            --space-8: 8px;
+            --space-12: 12px;
+            --space-16: 16px;
+            --space-20: 20px;
+            --space-24: 24px;
+            --space-32: 32px;
+            --radius-base: 8px;
+            --radius-lg: 12px;
+            --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.04);
+            --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.04);
+            --duration-normal: 250ms;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        html, body {
+            margin: 0;
+            padding: 0;
+            font-family: var(--font-family-base);
+            background-color: var(--color-background);
+            color: var(--color-text);
+        }
+
+        .app-container {
+            display: flex;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        .sidebar {
+            width: 280px;
+            background-color: var(--color-surface);
+            border-right: 1px solid var(--color-border);
+            overflow-y: auto;
+            padding: var(--space-16);
+            display: flex;
+            flex-direction: column;
+            gap: var(--space-16);
+        }
+
+        .logo {
+            font-size: var(--font-size-2xl);
+            font-weight: var(--font-weight-bold);
+            color: var(--color-primary);
+            margin-bottom: var(--space-8);
+        }
+
+        .nav-buttons {
+            display: flex;
+            flex-direction: column;
+            gap: var(--space-8);
+        }
+
+        .nav-btn {
+            padding: var(--space-12) var(--space-16);
+            border: 1px solid var(--color-border);
+            background-color: transparent;
+            border-radius: var(--radius-base);
+            cursor: pointer;
+            font-size: var(--font-size-md);
+            transition: all var(--duration-normal);
+            color: var(--color-text);
+            font-weight: var(--font-weight-medium);
+        }
+
+        .nav-btn:hover {
+            background-color: var(--color-primary);
+            color: var(--color-btn-primary-text);
+            border-color: var(--color-primary);
+        }
+
+        .nav-btn.active {
+            background-color: var(--color-primary);
+            color: var(--color-btn-primary-text);
+            border-color: var(--color-primary);
+        }
+
+        .main-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .content-area {
+            flex: 1;
+            overflow-y: auto;
+            padding: var(--space-24);
+        }
+
+        .section {
+            display: none;
+        }
+
+        .section.active {
+            display: block;
+        }
+
+        h1 {
+            font-size: var(--font-size-3xl);
+            margin-bottom: var(--space-16);
+            color: var(--color-text);
+        }
+
+        h2 {
+            font-size: var(--font-size-2xl);
+            margin-bottom: var(--space-12);
+            color: var(--color-text);
+        }
+
+        .btn {
+            padding: var(--space-8) var(--space-16);
+            border-radius: var(--radius-base);
+            font-size: var(--font-size-base);
+            font-weight: var(--font-weight-medium);
+            cursor: pointer;
+            transition: all var(--duration-normal);
+            border: none;
+            background-color: var(--color-primary);
+            color: var(--color-btn-primary-text);
+        }
+
+        .btn:hover {
+            background-color: var(--color-primary-hover);
+        }
+
+        .btn-secondary {
+            background-color: transparent;
+            color: var(--color-text);
+            border: 1px solid var(--color-border);
+        }
+
+        .btn-secondary:hover {
+            background-color: var(--color-gray-200);
+        }
+
+        .form-group {
+            margin-bottom: var(--space-16);
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: var(--space-8);
+            font-weight: var(--font-weight-medium);
+            font-size: var(--font-size-sm);
+        }
+
+        input[type="text"],
+        input[type="date"],
+        input[type="time"],
+        select,
+        textarea {
+            width: 100%;
+            padding: var(--space-8) var(--space-12);
+            border: 1px solid var(--color-border);
+            border-radius: var(--radius-base);
+            font-family: var(--font-family-base);
+            font-size: var(--font-size-base);
+            color: var(--color-text);
+            background-color: var(--color-surface);
+            transition: border-color var(--duration-normal);
+        }
+
+        input:focus,
+        select:focus,
+        textarea:focus {
+            outline: none;
+            border-color: var(--color-primary);
+            box-shadow: 0 0 0 3px rgba(33, 128, 141, 0.1);
+        }
+
+        textarea {
+            resize: vertical;
+            min-height: 80px;
+        }
+
+        /* Priority Matrix */
+        .priority-matrix {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: var(--space-16);
+            margin-bottom: var(--space-24);
+        }
+
+        .priority-quadrant {
+            padding: var(--space-16);
+            border-radius: var(--radius-lg);
+            border: 2px solid var(--color-border);
+            background-color: var(--color-surface);
+        }
+
+        .priority-quadrant h3 {
+            margin: 0 0 var(--space-12) 0;
+            font-size: var(--font-size-lg);
+        }
+
+        .urgent-important {
+            border-color: var(--color-red-500);
+            background: linear-gradient(135deg, rgba(192, 21, 47, 0.05) 0%, transparent 100%);
+        }
+
+        .urgent-important h3 {
+            color: var(--color-red-500);
+        }
+
+        .urgent-not-important {
+            border-color: var(--color-orange-500);
+            background: linear-gradient(135deg, rgba(168, 75, 47, 0.05) 0%, transparent 100%);
+        }
+
+        .urgent-not-important h3 {
+            color: var(--color-orange-500);
+        }
+
+        .not-urgent-important {
+            border-color: var(--color-teal-500);
+            background: linear-gradient(135deg, rgba(33, 128, 141, 0.05) 0%, transparent 100%);
+        }
+
+        .not-urgent-important h3 {
+            color: var(--color-teal-500);
+        }
+
+        .not-urgent-not-important {
+            border-color: var(--color-gray-400);
+            background: linear-gradient(135deg, rgba(119, 124, 124, 0.05) 0%, transparent 100%);
+        }
+
+        .not-urgent-not-important h3 {
+            color: var(--color-gray-400);
+        }
+
+        .task-item {
+            background-color: var(--color-cream-100);
+            padding: var(--space-12);
+            border-radius: var(--radius-base);
+            margin-bottom: var(--space-8);
+            display: flex;
+            justify-content: space-between;
+            align-items: start;
+            border-left: 4px solid var(--color-primary);
+        }
+
+        .task-content {
+            flex: 1;
+        }
+
+        .task-title {
+            font-weight: var(--font-weight-medium);
+            margin-bottom: var(--space-4);
+        }
+
+        .task-date {
+            font-size: var(--font-size-sm);
+            color: var(--color-text-secondary);
+        }
+
+        .task-delete {
+            background-color: transparent;
+            border: none;
+            color: var(--color-red-500);
+            cursor: pointer;
+            font-size: var(--font-size-lg);
+            padding: 0;
+        }
+
+        /* Calendar */
+        .calendar-controls {
+            display: flex;
+            gap: var(--space-12);
+            margin-bottom: var(--space-16);
+            align-items: center;
+        }
+
+        .calendar-toggle {
+            padding: var(--space-8) var(--space-12);
+            border-radius: var(--radius-base);
+            border: 1px solid var(--color-border);
+            background-color: transparent;
+            cursor: pointer;
+            transition: all var(--duration-normal);
+        }
+
+        .calendar-toggle.active {
+            background-color: var(--color-primary);
+            color: var(--color-btn-primary-text);
+            border-color: var(--color-primary);
+        }
+
+        .calendar-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: var(--space-8);
+            margin-bottom: var(--space-16);
+        }
+
+        .calendar-header {
+            font-weight: var(--font-weight-bold);
+            text-align: center;
+            padding: var(--space-8);
+            font-size: var(--font-size-sm);
+            color: var(--color-text-secondary);
+        }
+
+        .calendar-day {
+            aspect-ratio: 1;
+            padding: var(--space-8);
+            border-radius: var(--radius-base);
+            background-color: var(--color-surface);
+            border: 1px solid var(--color-border);
+            cursor: pointer;
+            transition: all var(--duration-normal);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start;
+            min-height: 80px;
+            overflow: hidden;
+        }
+
+        .calendar-day:hover {
+            background-color: var(--color-primary);
+            color: var(--color-btn-primary-text);
+            border-color: var(--color-primary);
+        }
+
+        .calendar-day.other-month {
+            background-color: transparent;
+            color: var(--color-text-secondary);
+            cursor: default;
+        }
+
+        .calendar-day.other-month:hover {
+            background-color: transparent;
+            color: var(--color-text-secondary);
+            border-color: var(--color-border);
+        }
+
+        .calendar-day-number {
+            font-weight: var(--font-weight-bold);
+            font-size: var(--font-size-sm);
+            margin-bottom: var(--space-4);
+        }
+
+        .calendar-day-events {
+            width: 100%;
+            font-size: 8px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .calendar-day-event {
+            background-color: rgba(33, 128, 141, 0.3);
+            padding: 2px 4px;
+            border-radius: 2px;
+            margin-bottom: 2px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        /* Reminders Section */
+        .reminders-container {
+            display: grid;
+            grid-template-columns: 1fr 2fr 1fr;
+            gap: var(--space-24);
+            margin-bottom: var(--space-24);
+        }
+
+        .reminder-section {
+            background-color: var(--color-surface);
+            padding: var(--space-16);
+            border-radius: var(--radius-lg);
+            border: 1px solid var(--color-border);
+        }
+
+        .reminder-section h3 {
+            margin: 0 0 var(--space-12) 0;
+            font-size: var(--font-size-lg);
+            color: var(--color-text);
+        }
+
+        .reminder-item {
+            background-color: var(--color-cream-100);
+            padding: var(--space-12);
+            border-radius: var(--radius-base);
+            margin-bottom: var(--space-8);
+            display: flex;
+            gap: var(--space-8);
+            align-items: flex-start;
+        }
+
+        .reminder-checkbox {
+            margin-top: var(--space-4);
+            width: 18px;
+            height: 18px;
+            cursor: pointer;
+            flex-shrink: 0;
+        }
+
+        .reminder-text {
+            flex: 1;
+            word-break: break-word;
+        }
+
+        .reminder-item.completed .reminder-text {
+            text-decoration: line-through;
+            color: var(--color-text-secondary);
+        }
+
+        .reminder-delete {
+            background-color: transparent;
+            border: none;
+            color: var(--color-red-500);
+            cursor: pointer;
+            padding: 0;
+            font-size: var(--font-size-lg);
+        }
+
+        .reminder-move {
+            background-color: transparent;
+            border: none;
+            color: var(--color-primary);
+            cursor: pointer;
+            padding: 0;
+            font-size: var(--font-size-lg);
+        }
+
+        /* Progress Bar */
+        .progress-container {
+            margin-bottom: var(--space-16);
+        }
+
+        .progress-label {
+            font-size: var(--font-size-sm);
+            font-weight: var(--font-weight-medium);
+            margin-bottom: var(--space-8);
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 24px;
+            background-color: var(--color-gray-200);
+            border-radius: var(--radius-base);
+            overflow: hidden;
+            border: 1px solid var(--color-border);
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--color-primary), var(--color-teal-400));
+            transition: width var(--duration-normal);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--color-btn-primary-text);
+            font-size: 11px;
+            font-weight: var(--font-weight-bold);
+        }
+
+        .empty-state {
+            text-align: center;
+            color: var(--color-text-secondary);
+            padding: var(--space-16);
+        }
+
+        /* Notes */
+        .notes-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: var(--space-16);
+        }
+
+        .note-card {
+            background-color: var(--color-surface);
+            padding: var(--space-16);
+            border-radius: var(--radius-lg);
+            border: 1px solid var(--color-border);
+            min-height: 200px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .note-title {
+            font-weight: var(--font-weight-medium);
+            margin-bottom: var(--space-8);
+            color: var(--color-text);
+        }
+
+        .note-content {
+            flex: 1;
+            word-break: break-word;
+            color: var(--color-text);
+            font-size: var(--font-size-sm);
+            line-height: 1.5;
+        }
+
+        .note-delete {
+            align-self: flex-end;
+            background-color: transparent;
+            border: none;
+            color: var(--color-red-500);
+            cursor: pointer;
+            font-size: var(--font-size-lg);
+            padding: 0;
+            margin-top: var(--space-8);
+        }
+
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background-color: var(--color-surface);
+            padding: var(--space-24);
+            border-radius: var(--radius-lg);
+            max-width: 600px;
+            width: 90%;
+            max-height: 90vh;
+            overflow-y: auto;
+            position: relative;
+        }
+
+        .modal-header {
+            font-size: var(--font-size-2xl);
+            font-weight: var(--font-weight-bold);
+            margin-bottom: var(--space-16);
+        }
+
+        .modal-close {
+            position: absolute;
+            top: var(--space-16);
+            right: var(--space-16);
+            background-color: transparent;
+            border: none;
+            font-size: var(--font-size-2xl);
+            cursor: pointer;
+            color: var(--color-text);
+        }
+
+        .save-btn {
+            background-color: var(--color-primary);
+            color: var(--color-btn-primary-text);
+            padding: var(--space-12) var(--space-20);
+            border: none;
+            border-radius: var(--radius-base);
+            font-size: var(--font-size-base);
+            font-weight: var(--font-weight-medium);
+            cursor: pointer;
+            transition: all var(--duration-normal);
+            width: 100%;
+        }
+
+        .save-btn:hover {
+            background-color: var(--color-primary-hover);
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <!-- Sidebar -->
+        <div class="sidebar">
+            <div class="logo">📋 Planning Pro</div>
+            <nav class="nav-buttons">
+                <button class="nav-btn active" onclick="switchSection('dashboard', event)">Dashboard</button>
+                <button class="nav-btn" onclick="switchSection('tasks', event)">Tasks & Notes</button>
+                <button class="nav-btn" onclick="switchSection('calendar', event)">Calendar</button>
+                <button class="nav-btn" onclick="switchSection('reminders', event)">Reminders</button>
+            </nav>
+        </div>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <div class="content-area">
+                <!-- Dashboard Section -->
+                <section id="dashboard" class="section active">
+                    <h1>Dashboard</h1>
+                    <p>Welcome to Planning Pro! Get started by creating tasks, notes, or setting reminders.</p>
+                    <button class="btn" onclick="openTaskModal()">+ New Task</button>
+                    <button class="btn" onclick="openNoteModal()">+ New Note</button>
+                    <button class="btn" onclick="openReminderModal()">+ New Reminder</button>
+                </section>
+
+                <!-- Tasks & Notes Section -->
+                <section id="tasks" class="section">
+                    <h1>Tasks & Notes</h1>
+                    
+                    <!-- Priority Matrix -->
+                    <h2>Priority Matrix (Eisenhower)</h2>
+                    <div class="priority-matrix">
+                        <div class="priority-quadrant urgent-important">
+                            <h3>🔴 Do (Urgent & Important)</h3>
+                            <div id="quadrant1"></div>
+                            <div class="empty-state" id="empty1" style="display:none;">No tasks</div>
+                        </div>
+                        <div class="priority-quadrant urgent-not-important">
+                            <h3>🟠 Delegate (Urgent, Not Important)</h3>
+                            <div id="quadrant2"></div>
+                            <div class="empty-state" id="empty2" style="display:none;">No tasks</div>
+                        </div>
+                        <div class="priority-quadrant not-urgent-important">
+                            <h3>🟢 Schedule (Not Urgent, Important)</h3>
+                            <div id="quadrant3"></div>
+                            <div class="empty-state" id="empty3" style="display:none;">No tasks</div>
+                        </div>
+                        <div class="priority-quadrant not-urgent-not-important">
+                            <h3>⚪ Eliminate (Neither Urgent nor Important)</h3>
+                            <div id="quadrant4"></div>
+                            <div class="empty-state" id="empty4" style="display:none;">No tasks</div>
+                        </div>
+                    </div>
+
+                    <h2>Quick Add Task</h2>
+                    <button class="btn" onclick="openTaskModal()">+ New Task</button>
+
+                    <h2 style="margin-top: var(--space-32);">Notes</h2>
+                    <button class="btn" onclick="openNoteModal()">+ New Note</button>
+                    <div class="notes-grid" id="notesGrid"></div>
+                </section>
+
+                <!-- Calendar Section -->
+                <section id="calendar" class="section">
+                    <h1>Calendar & Schedule</h1>
+                    
+                    <div class="calendar-controls">
+                        <button class="calendar-toggle active" onclick="switchCalendarMode('general', event)">General Calendar</button>
+                        <button class="calendar-toggle" onclick="switchCalendarMode('learning', event)">Learning Calendar</button>
+                    </div>
+
+                    <div id="calendarView"></div>
+
+                    <h2 style="margin-top: var(--space-32);">Scheduled for Selected Date</h2>
+                    <div id="selectedDateEvents"></div>
+                </section>
+
+                <!-- Reminders Section -->
+                <section id="reminders" class="section">
+                    <h1>Reminders & Progress</h1>
+                    
+                    <button class="btn" onclick="openReminderModal()">+ New Reminder</button>
+                    
+                    <div class="reminders-container" id="remindersView"></div>
+                </section>
+            </div>
+        </div>
+    </div>
+
+    <!-- Task Modal -->
+    <div id="taskModal" class="modal">
+        <div class="modal-content">
+            <button class="modal-close" onclick="closeTaskModal()">✕</button>
+            <div class="modal-header">Create Task</div>
+            
+            <div class="form-group">
+                <label class="form-label">Task Title</label>
+                <input type="text" id="taskTitle" placeholder="Enter task title">
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Description</label>
+                <textarea id="taskDescription" placeholder="Enter task description"></textarea>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Due Date</label>
+                <input type="date" id="taskDate">
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Is Urgent?</label>
+                <select id="taskUrgent">
+                    <option value="false">No</option>
+                    <option value="true">Yes</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Is Important?</label>
+                <select id="taskImportant">
+                    <option value="false">No</option>
+                    <option value="true">Yes</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Calendar Type</label>
+                <select id="taskCalendarType">
+                    <option value="general">General Calendar</option>
+                    <option value="learning">Learning Calendar</option>
+                </select>
+            </div>
+
+            <button class="save-btn" onclick="saveTask()">Save Task</button>
+        </div>
+    </div>
+
+    <!-- Note Modal -->
+    <div id="noteModal" class="modal">
+        <div class="modal-content">
+            <button class="modal-close" onclick="closeNoteModal()">✕</button>
+            <div class="modal-header">Create Note</div>
+            
+            <div class="form-group">
+                <label class="form-label">Note Title</label>
+                <input type="text" id="noteTitle" placeholder="Enter note title">
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Note Content</label>
+                <textarea id="noteContent" placeholder="Enter note content"></textarea>
+            </div>
+
+            <button class="save-btn" onclick="saveNote()">Save Note</button>
+        </div>
+    </div>
+
+    <!-- Reminder Modal -->
+    <div id="reminderModal" class="modal">
+        <div class="modal-content">
+            <button class="modal-close" onclick="closeReminderModal()">✕</button>
+            <div class="modal-header">Create Reminder</div>
+            
+            <div class="form-group">
+                <label class="form-label">Reminder Text</label>
+                <input type="text" id="reminderText" placeholder="Enter reminder text">
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Size</label>
+                <select id="reminderSize">
+                    <option value="small">Small</option>
+                    <option value="medium">Medium</option>
+                    <option value="large">Large</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Due Date</label>
+                <input type="date" id="reminderDate">
+            </div>
+
+            <button class="save-btn" onclick="saveReminder()">Save Reminder</button>
+        </div>
+    </div>
+
+    <script>
+        // Data Storage
+        const appData = {
+            tasks: [],
+            notes: [],
+            reminders: [],
+            currentCalendarMode: 'general',
+            selectedDate: new Date()
+        };
+
+        function loadData() {
+            const saved = localStorage.getItem('planningProData');
+            if (saved) {
+                const parsed = JSON.parse(saved);
+                appData.tasks = parsed.tasks || [];
+                appData.notes = parsed.notes || [];
+                appData.reminders = parsed.reminders || [];
+            }
+        }
+
+        function saveData() {
+            localStorage.setItem('planningProData', JSON.stringify(appData));
+        }
+
+        // Section Navigation
+        function switchSection(section, evt) {
+            document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+            document.getElementById(section).classList.add('active');
+            
+            document.querySelectorAll('.nav-btn').forEach(btn => btn.classList.remove('active'));
+            if (evt) evt.target.classList.add('active');
+
+            if (section === 'calendar') {
+                renderCalendar();
+            } else if (section === 'reminders') {
+                renderReminders();
+            } else if (section === 'tasks') {
+                renderPriorityMatrix();
+                renderNotes();
+            }
+        }
+
+        // Task Modal
+        function openTaskModal() {
+            document.getElementById('taskModal').classList.add('active');
+        }
+
+        function closeTaskModal() {
+            document.getElementById('taskModal').classList.remove('active');
+            document.getElementById('taskTitle').value = '';
+            document.getElementById('taskDescription').value = '';
+            document.getElementById('taskDate').value = '';
+            document.getElementById('taskUrgent').value = 'false';
+            document.getElementById('taskImportant').value = 'false';
+            document.getElementById('taskCalendarType').value = 'general';
+        }
+
+        function saveTask() {
+            const task = {
+                id: Date.now(),
+                title: document.getElementById('taskTitle').value,
+                description: document.getElementById('taskDescription').value,
+                date: document.getElementById('taskDate').value,
+                urgent: document.getElementById('taskUrgent').value === 'true',
+                important: document.getElementById('taskImportant').value === 'true',
+                calendarType: document.getElementById('taskCalendarType').value
+            };
+
+            if (task.title.trim()) {
+                appData.tasks.push(task);
+                saveData();
+                closeTaskModal();
+                renderPriorityMatrix();
+                renderCalendar();
+            }
+        }
+
+        function deleteTask(id) {
+            appData.tasks = appData.tasks.filter(t => t.id !== id);
+            saveData();
+            renderPriorityMatrix();
+            renderCalendar();
+        }
+
+        // Note Modal
+        function openNoteModal() {
+            document.getElementById('noteModal').classList.add('active');
+        }
+
+        function closeNoteModal() {
+            document.getElementById('noteModal').classList.remove('active');
+            document.getElementById('noteTitle').value = '';
+            document.getElementById('noteContent').value = '';
+        }
+
+        function saveNote() {
+            const note = {
+                id: Date.now(),
+                title: document.getElementById('noteTitle').value,
+                content: document.getElementById('noteContent').value
+            };
+
+            if (note.title.trim()) {
+                appData.notes.push(note);
+                saveData();
+                closeNoteModal();
+                renderNotes();
+            }
+        }
+
+        function deleteNote(id) {
+            appData.notes = appData.notes.filter(n => n.id !== id);
+            saveData();
+            renderNotes();
+        }
+
+        function renderNotes() {
+            const grid = document.getElementById('notesGrid');
+            grid.innerHTML = '';
+
+            appData.notes.forEach(note => {
+                const card = document.createElement('div');
+                card.className = 'note-card';
+                card.innerHTML = `
+                    <div class="note-title">${note.title}</div>
+                    <div class="note-content">${note.content}</div>
+                    <button class="note-delete" onclick="deleteNote(${note.id})">🗑️</button>
+                `;
+                grid.appendChild(card);
+            });
+        }
+
+        // Priority Matrix
+        function renderPriorityMatrix() {
+            const quadrants = [
+                { id: 'quadrant1', empty: 'empty1', urgent: true, important: true },
+                { id: 'quadrant2', empty: 'empty2', urgent: true, important: false },
+                { id: 'quadrant3', empty: 'empty3', urgent: false, important: true },
+                { id: 'quadrant4', empty: 'empty4', urgent: false, important: false }
+            ];
+
+            quadrants.forEach(q => {
+                const tasks = appData.tasks.filter(t => t.urgent === q.urgent && t.important === q.important);
+                const container = document.getElementById(q.id);
+                const emptyState = document.getElementById(q.empty);
+                
+                container.innerHTML = '';
+                
+                if (tasks.length === 0) {
+                    emptyState.style.display = 'block';
+                } else {
+                    emptyState.style.display = 'none';
+                    tasks.forEach(task => {
+                        const item = document.createElement('div');
+                        item.className = 'task-item';
+                        item.innerHTML = `
+                            <div class="task-content">
+                                <div class="task-title">${task.title}</div>
+                                <div class="task-date">${task.date || 'No date'}</div>
+                            </div>
+                            <button class="task-delete" onclick="deleteTask(${task.id})">✕</button>
+                        `;
+                        container.appendChild(item);
+                    });
+                }
+            });
+        }
+
+        // Reminder Modal
+        function openReminderModal() {
+            document.getElementById('reminderModal').classList.add('active');
+        }
+
+        function closeReminderModal() {
+            document.getElementById('reminderModal').classList.remove('active');
+            document.getElementById('reminderText').value = '';
+            document.getElementById('reminderSize').value = 'small';
+            document.getElementById('reminderDate').value = '';
+        }
+
+        function saveReminder() {
+            const reminder = {
+                id: Date.now(),
+                text: document.getElementById('reminderText').value,
+                size: document.getElementById('reminderSize').value,
+                date: document.getElementById('reminderDate').value,
+                completed: false
+            };
+
+            if (reminder.text.trim()) {
+                appData.reminders.push(reminder);
+                saveData();
+                closeReminderModal();
+                renderReminders();
+            }
+        }
+
+        function deleteReminder(id) {
+            appData.reminders = appData.reminders.filter(r => r.id !== id);
+            saveData();
+            renderReminders();
+        }
+
+        function toggleReminder(id) {
+            const reminder = appData.reminders.find(r => r.id === id);
+            if (reminder) {
+                reminder.completed = !reminder.completed;
+                saveData();
+                renderReminders();
+            }
+        }
+
+        function moveReminder(id, newSize) {
+            const reminder = appData.reminders.find(r => r.id === id);
+            if (reminder) {
+                reminder.size = newSize;
+                saveData();
+                renderReminders();
+            }
+        }
+
+        function renderReminders() {
+            const container = document.getElementById('remindersView');
+            container.innerHTML = '';
+
+            const small = appData.reminders.filter(r => r.size === 'small');
+            const medium = appData.reminders.filter(r => r.size === 'medium');
+            const large = appData.reminders.filter(r => r.size === 'large');
+
+            const smallCompleted = small.filter(r => r.completed).length;
+            const smallTotal = small.length;
+            const smallProgress = smallTotal > 0 ? (smallCompleted / smallTotal) * 100 : 0;
+
+            // Small
+            let smallHTML = '<div class="reminder-section"><h3>Small Tasks</h3>';
+            if (small.length === 0) {
+                smallHTML += '<div class="empty-state">No small reminders</div>';
+            } else {
+                small.forEach(r => {
+                    smallHTML += `
+                        <div class="reminder-item ${r.completed ? 'completed' : ''}">
+                            <input type="checkbox" class="reminder-checkbox" ${r.completed ? 'checked' : ''} onchange="toggleReminder(${r.id})">
+                            <div class="reminder-text">${r.text}</div>
+                            <button class="reminder-delete" onclick="deleteReminder(${r.id})">✕</button>
+                        </div>
+                    `;
+                });
+            }
+            smallHTML += '</div>';
+
+            // Medium with progress
+            let mediumHTML = '<div class="reminder-section"><h3>Medium Tasks</h3>';
+            mediumHTML += '<div class="progress-container">';
+            mediumHTML += '<div class="progress-label"><span>Progress</span><span>' + smallCompleted + '/' + smallTotal + '</span></div>';
+            mediumHTML += '<div class="progress-bar"><div class="progress-fill" style="width: ' + smallProgress + '%;">' + (smallProgress > 10 ? Math.round(smallProgress) + '%' : '') + '</div></div>';
+            mediumHTML += '</div>';
+            
+            if (medium.length === 0) {
+                mediumHTML += '<div class="empty-state">No medium reminders</div>';
+            } else {
+                medium.forEach(r => {
+                    mediumHTML += `
+                        <div class="reminder-item ${r.completed ? 'completed' : ''}">
+                            <input type="checkbox" class="reminder-checkbox" ${r.completed ? 'checked' : ''} onchange="toggleReminder(${r.id})">
+                            <div class="reminder-text">${r.text}</div>
+                            <button class="reminder-delete" onclick="deleteReminder(${r.id})">✕</button>
+                            <button class="reminder-move" title="Move to Large" onclick="moveReminder(${r.id}, 'large')">⬆️</button>
+                        </div>
+                    `;
+                });
+            }
+            mediumHTML += '</div>';
+
+            // Large
+            let largeHTML = '<div class="reminder-section"><h3>Large Tasks</h3>';
+            if (large.length === 0) {
+                largeHTML += '<div class="empty-state">No large reminders</div>';
+            } else {
+                large.forEach(r => {
+                    largeHTML += `
+                        <div class="reminder-item ${r.completed ? 'completed' : ''}">
+                            <input type="checkbox" class="reminder-checkbox" ${r.completed ? 'checked' : ''} onchange="toggleReminder(${r.id})">
+                            <div class="reminder-text">${r.text}</div>
+                            <button class="reminder-delete" onclick="deleteReminder(${r.id})">✕</button>
+                            <button class="reminder-move" title="Move to Medium" onclick="moveReminder(${r.id}, 'medium')">⬇️</button>
+                        </div>
+                    `;
+                });
+            }
+            largeHTML += '</div>';
+
+            container.innerHTML = smallHTML + mediumHTML + largeHTML;
+        }
+
+        // Calendar
+        function switchCalendarMode(mode, evt) {
+            appData.currentCalendarMode = mode;
+            document.querySelectorAll('.calendar-toggle').forEach(btn => btn.classList.remove('active'));
+            if (evt) evt.target.classList.add('active');
+            renderCalendar();
+        }
+
+        function renderCalendar() {
+            const year = appData.selectedDate.getFullYear();
+            const month = appData.selectedDate.getMonth();
+            
+            const firstDay = new Date(year, month, 1);
+            const lastDay = new Date(year, month + 1, 0);
+            const startDate = new Date(firstDay);
+            startDate.setDate(startDate.getDate() - firstDay.getDay());
+
+            let html = '<div style="margin-bottom: 20px;">';
+            html += '<button class="btn-secondary" onclick="previousMonth()" style="margin-right: 10px;">← Previous</button>';
+            html += '<span style="margin: 0 20px; font-weight: bold;">' + firstDay.toLocaleDateString('en-US', {month: 'long', year: 'numeric'}) + '</span>';
+            html += '<button class="btn-secondary" onclick="nextMonth()">Next →</button>';
+            html += '</div>';
+
+            html += '<div class="calendar-grid">';
+            
+            const dayNames = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+            dayNames.forEach(day => {
+                html += '<div class="calendar-header">' + day + '</div>';
+            });
+
+            const filteredTasks = appData.tasks.filter(t => t.calendarType === appData.currentCalendarMode);
+
+            for (let i = 0; i < 42; i++) {
+                const date = new Date(startDate);
+                date.setDate(date.getDate() + i);
+                
+                const isCurrentMonth = date.getMonth() === month;
+                const dateStr = date.toISOString().split('T')[0];
+                const dayTasks = filteredTasks.filter(t => t.date === dateStr);
+
+                html += '<div class="calendar-day ' + (isCurrentMonth ? '' : 'other-month') + '" onclick="selectDate(\'' + dateStr + '\')">';
+                html += '<div class="calendar-day-number">' + date.getDate() + '</div>';
+                html += '<div class="calendar-day-events">';
+                dayTasks.slice(0, 2).forEach(task => {
+                    html += '<div class="calendar-day-event">' + task.title.substring(0, 12) + '</div>';
+                });
+                if (dayTasks.length > 2) {
+                    html += '<div class="calendar-day-event">+' + (dayTasks.length - 2) + ' more</div>';
+                }
+                html += '</div></div>';
+            }
+
+            html += '</div>';
+
+            document.getElementById('calendarView').innerHTML = html;
+            renderSelectedDateEvents();
+        }
+
+        function previousMonth() {
+            appData.selectedDate.setMonth(appData.selectedDate.getMonth() - 1);
+            renderCalendar();
+        }
+
+        function nextMonth() {
+            appData.selectedDate.setMonth(appData.selectedDate.getMonth() + 1);
+            renderCalendar();
+        }
+
+        function selectDate(dateStr) {
+            appData.selectedDate = new Date(dateStr);
+            renderSelectedDateEvents();
+        }
+
+        function renderSelectedDateEvents() {
+            const dateStr = appData.selectedDate.toISOString().split('T')[0];
+            const filteredTasks = appData.tasks.filter(t => t.calendarType === appData.currentCalendarMode && t.date === dateStr);
+
+            let html = '<p><strong>Date:</strong> ' + new Date(dateStr).toLocaleDateString() + '</p>';
+            
+            if (filteredTasks.length === 0) {
+                html += '<div class="empty-state">No events on this date</div>';
+            } else {
+                filteredTasks.forEach(task => {
+                    html += '<div class="task-item" style="margin-bottom: 10px;">';
+                    html += '<div class="task-content">';
+                    html += '<div class="task-title">' + task.title + '</div>';
+                    html += '<div class="task-date">' + task.description + '</div>';
+                    html += '</div>';
+                    html += '<button class="task-delete" onclick="deleteTask(' + task.id + ')">✕</button>';
+                    html += '</div>';
+                });
+            }
+
+            document.getElementById('selectedDateEvents').innerHTML = html;
+        }
+
+        window.addEventListener('DOMContentLoaded', () => {
+            loadData();
+            renderNotes();
+            renderPriorityMatrix();
+            renderReminders();
+        });
+    </script>
+</body>
+</html>
